@@ -6,4 +6,5 @@
 _minted-book
 *.fls
 *.data.minted
-*.fdb_latexmk
+*.fdb_latexmk:
+*.pyg
