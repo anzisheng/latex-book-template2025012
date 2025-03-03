@@ -1,7 +1,8 @@
-\chapter{模板使用基本知识}
-文档模板严格按照科生实验报告模板撰写，部分略有不同。纠正了原word版本中一些错误，严格按照国际文档书写排版标准重新定制内容格式。本模板适用于\textbf{新手}，讲述内容不全面也不够精细，但是对于新人书写实验报告足够了，想要精细学习的读者可以阅读lshort(\url{http://www.latexstudio.net/page/tex-documents})开始，进阶可以阅读刘海洋的书籍。对本模板有意见或者不懂之处欢迎致电作者，邮箱：549274614@qq.com，或加入本校交流群：77586170。
+\chapter{基本环境配置}
+我的开发环境是操作系统是wsl，即在windows10 系统上安装了Ubuntu 22.04子系统，具体安装方法，可以自行查阅相关资料。
+首先安装的开发工具CUDA，我选的版本是11.8，不算特别新，也不算特别古老。适合于当前流行的Nvida显卡。同时安装的CUDNN，这是神经网络的开发库。具体安装方法可以参考\url{https://gist.github.com/MihailCosmin/affa6b1b71b43787e9228c25fe15aeba?permalink_comment_id=4850089}。演示了CUDA和CUDNN的安装及验证代码。
+TensorRT 是 NVIDIA 推出的用于深度学习推理加速的高性能推理引擎。它可以将深度学习模型优化并部署到 NVIDIA GPU 上，实现低延迟、高吞吐量的推理过程。TensorRT 主要用于加速实时推理任务，如物体检测、图像分类、自然语言处理等。
 
-在开始介绍前首先介绍我们所接触的\LaTeX 中的3种名词，分别是套装发行版、编译引擎与编译器。
 \begin{itemize}
 \item \textbf{套装发行版：}俗称\LaTeX 的核心，常见的有CTeX套装、TeXlive套装（作者使用）、MacTeX套装等等，本文使用TeXlive2018版本，下载地址为\url{http://www.latexstudio.net/texsoftware}。
 
