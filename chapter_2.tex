@@ -1,6 +1,42 @@
 \chapter{神经网络和人脸检测算法}
 换脸算法的输入是两张图片，一张称之为”源图“（source），一般为客户的照片，另一张为”目标图“（target），一般可选明星的写真图。通过换脸算法生成换脸图。流程如下：
 
+我们需要考虑换算算法。
+中学的时候，我们认识了函数。
+1.函数 ，表示输入与输出之间的映射关系。给定一个输入 x 函数  f
+f 会生成一个输出 y=f(x)。 我们一般常见的函数，也就三四个参数，多至8，9个参数。
+对于我们认识在一张图片上找出人脸的检测任务，简单想一下，不止大小，还有位置，这些函数肯定不能完成。这时候我们就需要更多更复杂的函数了。我们就考虑使用神经网络。
+神经网络可以看作是一个复杂的函数，能够逼近任何连续函数（通用逼近定理）。通过组合多个简单函数（神经元），神经网络能够学习复杂的非线性映射。
+人脸检测yolov8face的参数量，可能达到几百万个。我们需要大量数据进行训练，保存参数的系数，Pytorch保存格式为.pth文件。
+ONNX(开放神经网络交换)格式，是一个用于表示深度学习模型的标准，可使模型在不同框架之间进行转移。
+对于人脸检测网络yoloface_8n.onnx的使用， 我们需要知道是它的输入和输出。
+我可以使用Netron工具打开onnx模型，查看起网络结果。网络的入口出，可以看到输入：
+
+
+\begin{figure}[H]
+\centering
+\includegraphics{figures/inputs.png}
+\caption{Title of picture}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics{figures/output.png}
+\caption{Title of picture}
+\end{figure}
+
+
+
+
+
+#\begin{figure}[htbp]
+#    \centering
+#	\includegraphics[width=0.5\textwidth]{figures/inputs.png}
+#	\caption{"输入"}
+#    \label{fig:input}
+#\end{figure}
+输出:
+\includegraphics{figures/output.png}
 \LaTeX 的源文件本质上是文本文档，利用Windows自带文本编辑器、note++、word、vim等文本编辑器均可编写出tex文档，至于texwork、texstudio、winedt等则为转述的tex编辑器，提供了语法高亮、匹配查找、自动补全命令等等用途。
 
 除此之外\LaTeX 还可以排版数学公式、图片、表格等等，内容将在后续章节件数。
