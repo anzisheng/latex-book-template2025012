@@ -37,6 +37,143 @@ ONNX(开放神经网络交换)格式，是一个用于表示深度学习模型�
 #\end{figure}
 输出:
 \includegraphics{figures/output.png}
+
+在换脸的应用中，我会使用多个深度学习的网络，像是人脸关键点检测网络，换脸网络及人脸美化网络。他们有着类似的网络结果，所以，提取抽象类，封装为一个接口。
+它通过定义纯虚函数强制派生类实现特定功能。
+
+\begin{lstlisting}{c}
+template <typename T>
+class IEngine {
+public:
+    virtual ~IEngine() = default;
+        const std::array<float, 3> &divVals = {1.f, 1.f, 1.f}, 
+        bool normalize = true, int method = 0) = 0;
+    virtual bool loadNetwork(
+        std::string trtModelPath, 
+        const std::array<float, 3> &subVals = {0.f, 0.f, 0.f},
+        const std::array<float, 3> &divVals = {1.f, 1.f, 1.f}, 
+        bool normalize = true) = 0;
+    virtual bool runInference(
+        const std::vector<std::vector<cv::cuda::GpuMat>> &inputs, 
+        std::vector<std::vector<std::vector<T>>> &featureVectors) = 0;
+    virtual const std::vector<nvinfer1::Dims3> &getInputDims() const = 0;
+    virtual const std::vector<nvinfer1::Dims> &getOutputDims() const = 0;
+};
+\end{lstlisting}
+
+定义Engine类实例化这个接口，实现接口定义的功能。
+\begin{lstlisting}
+	template <typename T>
+class Engine : public IEngine<T> {
+public:
+    Engine(const Options &options);
+    ~Engine();
+
+    // Build the onnx model into a TensorRT engine file, cache the model to disk
+    // (to avoid rebuilding in future), and then load the model into memory The
+    // default implementation will normalize values between [0.f, 1.f] Setting the
+    // normalize flag to false will leave values between [0.f, 255.f] (some
+    // converted models may require this). If the model requires values to be
+    // normalized between [-1.f, 1.f], use the following params:
+    //    subVals = {0.5f, 0.5f, 0.5f};
+    //    divVals = {0.5f, 0.5f, 0.5f};
+    //    normalize = true;
+    bool buildLoadNetwork(std::string onnxModelPath, const std::array<float, 3> &subVals = {0.f, 0.f, 0.f},
+                          const std::array<float, 3> &divVals = {1.f, 1.f, 1.f}, bool normalize = true,int method = 0) override;
+
+    // Load a TensorRT engine file from disk into memory
+    // The default implementation will normalize values between [0.f, 1.f]
+    // Setting the normalize flag to false will leave values between [0.f, 255.f]
+    // (some converted models may require this). If the model requires values to
+    // be normalized between [-1.f, 1.f], use the following params:
+    //    subVals = {0.5f, 0.5f, 0.5f};
+    //    divVals = {0.5f, 0.5f, 0.5f};
+    //    normalize = true;
+    bool loadNetwork(std::string trtModelPath, const std::array<float, 3> &subVals = {0.f, 0.f, 0.f},
+                     const std::array<float, 3> &divVals = {1.f, 1.f, 1.f}, bool normalize = true) override;
+
+    // Run inference.
+    // Input format [input][batch][cv::cuda::GpuMat]
+    // Output format [batch][output][feature_vector]
+    bool runInference(const std::vector<std::vector<cv::cuda::GpuMat>> &inputs, std::vector<std::vector<std::vector<T>>> &featureVectors) override;
+
+    // Utility method for resizing an image while maintaining the aspect ratio by
+    // adding padding to smaller dimension after scaling While letterbox padding
+    // normally adds padding to top & bottom, or left & right sides, this
+    // implementation only adds padding to the right or bottom side This is done
+    // so that it's easier to convert detected coordinates (ex. YOLO model) back
+    // to the original reference frame.
+    static cv::cuda::GpuMat resizeKeepAspectRatioPadRightBottom(const cv::cuda::GpuMat &input, size_t height, size_t width,
+                                                                const cv::Scalar &bgcolor = cv::Scalar(0, 0, 0));
+
+    [[nodiscard]] const std::vector<nvinfer1::Dims3> &getInputDims() const override { return m_inputDims; };
+    [[nodiscard]] const std::vector<nvinfer1::Dims> &getOutputDims() const override { return m_outputDims; };
+
+    // Utility method for transforming triple nested output array into 2D array
+    // Should be used when the output batch size is 1, but there are multiple
+    // output feature vectors
+    static void transformOutput(std::vector<std::vector<std::vector<T>>> &input, std::vector<std::vector<T>> &output);
+
+    // Utility method for transforming triple nested output array into single
+    // array Should be used when the output batch size is 1, and there is only a
+    // single output feature vector
+    static void transformOutput(std::vector<std::vector<std::vector<T>>> &input, std::vector<T> &output);
+    // Convert NHWC to NCHW and apply scaling and mean subtraction
+    static cv::cuda::GpuMat blobFromGpuMats(const std::vector<cv::cuda::GpuMat> &batchInput, const std::array<float, 3> &subVals,
+                                            const std::array<float, 3> &divVals, bool normalize, bool swapRB = false);
+
+//private:
+    // Build the network
+    bool build(std::string onnxModelPath, const std::array<float, 3> &subVals, const std::array<float, 3> &divVals, bool normalize);
+    bool build1(std::string onnxModelPath, const std::array<float, 3> &subVals, const std::array<float, 3> &divVals, bool normalize);
+
+    bool constructNetwork(std::string onnxModelPath, std::unique_ptr<nvinfer1::IBuilder>& builder,
+        std::unique_ptr<nvinfer1::INetworkDefinition>& network, std::unique_ptr<nvinfer1::IBuilderConfig>& config,
+        std::unique_ptr<nvonnxparser::IParser>& parser);
+
+
+    // Converts the engine options into a string
+    std::string serializeEngineOptions(const Options &options, const std::string &onnxModelPath);
+
+    void getDeviceNames(std::vector<std::string> &deviceNames);
+
+    void clearGpuBuffers();
+
+    // Normalization, scaling, and mean subtraction of inputs
+    std::array<float, 3> m_subVals{};
+    std::array<float, 3> m_divVals{};
+    bool m_normalize;
+
+    // Holds pointers to the input and output GPU buffers
+    std::vector<void *> m_buffers;
+    std::vector<uint32_t> m_outputLengths{};
+    std::vector<nvinfer1::Dims3> m_inputDims;
+    std::vector<nvinfer1::Dims> m_outputDims;
+    std::vector<std::string> m_IOTensorNames;
+    int32_t m_inputBatchSize;
+
+    // Must keep IRuntime around for inference, see:
+    // https://forums.developer.nvidia.com/t/is-it-safe-to-deallocate-nvinfer1-iruntime-after-creating-an-nvinfer1-icudaengine-but-before-running-inference-with-said-icudaengine/255381/2?u=cyruspk4w6
+    //std::unique_ptr<nvinfer1::IRuntime> m_runtime = nullptr;
+    std::shared_ptr<nvinfer1::IRuntime> m_runtime = nullptr;
+
+    std::unique_ptr<Int8EntropyCalibrator2> m_calibrator = nullptr;
+    //std::unique_ptr<nvinfer1::ICudaEngine> m_engine = nullptr;
+    std::shared_ptr<nvinfer1::ICudaEngine> m_engine = nullptr;
+    std::unique_ptr<nvinfer1::IExecutionContext> m_context = nullptr;
+    const Options m_options;
+    Logger m_logger;
+};
+
+template <typename T> Engine<T>::Engine(const Options &options) : m_options(options) {}
+
+template <typename T> Engine<T>::~Engine() { clearGpuBuffers(); }
+
+\end{lstlisting}
+
+
+
+
 \LaTeX 的源文件本质上是文本文档，利用Windows自带文本编辑器、note++、word、vim等文本编辑器均可编写出tex文档，至于texwork、texstudio、winedt等则为转述的tex编辑器，提供了语法高亮、匹配查找、自动补全命令等等用途。
 
 除此之外\LaTeX 还可以排版数学公式、图片、表格等等，内容将在后续章节件数。
