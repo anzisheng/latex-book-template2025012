@@ -1,9 +1,53 @@
-\chapter{本书内容及基本环境配置}
+\chapter{本书内容的基本环境配置}
 本书是目标是介绍一个AI换脸系统的开发流程，主要是讲解整个系统的整体结构、流程，核心算法及加速算法。并附带完整代码的Git地址。读者学完后可以开发这个系统作为基础，有想法的读者可以进行扩充，就可以开发一个商业软件。
 我使用的开发环境是操作系统是wsl，即在windows10 系统上安装了Ubuntu 22.04子系统，具体安装方法，可以自行查阅相关资料。
 首先安装的开发工具CUDA，我选的版本是11.8，不算特别新，也不算特别古老。适合于当前流行的Nvida显卡。同时安装的CUDNN，这是神经网络的开发库。具体安装方法可以参考\url{https://gist.github.com/MihailCosmin/affa6b1b71b43787e9228c25fe15aeba?permalink_comment_id=4850089}。演示了CUDA和CUDNN的安装及验证代码。
 TensorRT 是 NVIDIA 推出的用于深度学习推理加速的高性能推理引擎。它可以将深度学习模型优化并部署到 NVIDIA GPU 上，实现低延迟、高吞吐量的推理过程。TensorRT 主要用于加速实时推理任务，如物体检测、图像分类、自然语言处理等。
+所需的库是：
+\begin{itemize}
+\item \textbf{CUDA}
+\item \textbf{TensorRT}
+\item \textbf{OpenCV}：
 
+下面就逐一讲解每个库的安装方法，
+
+1.安装CUDA
+我们选择安装的CUDA版本是11.8。它是一个比较通用的版本。
+安装过程如下：
+\begin{lstlisting}{c}
+     mkdir Downloads && cd Downloads #为了模仿Ubuntu系统，我们自己创建了Downloads文件夹，用来存储下载的文件。
+     sudo apt update && sudo apt upgrade -y #更新一些库
+     sudo apt install g++ freeglut3-dev build-essential libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev #安装所需的依赖库
+     sudo wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin #   APT 软件包优先级配置文件,确保系统从正确的仓库（如 NVIDIA 官方仓库）安装 CUDA 工具包
+     sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600 #移动到/etc/apt路径下 
+     sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub #这是一个 GPG 公钥文件，用于验证从 NVIDIA CUDA 仓库下载的软件包的签名，确保其完整性和来源可信。 
+     sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" 
+     sudo apt install cuda-11-8 -y   
+     echo 'export PATH=/usr/local/cuda-11.8/bin:$PATH' >> ~/.bashrc  
+     echo 'export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc 
+     source ~/.bashrc 
+     sudo ldconfig
+     nvcc -V #查看安装结果，如果显示 "Cuda compilation tools, release 11.8, V11.8.89" 表示安装成功了。
+\end{lstlisting}
+接着还要安装一下 CUDNN库。下面指令仍然是在~/Downloads路径下面执行。
+\begin{lstlisting}{c}
+    CUDNN_TAR_FILE="cudnn-linux-x86_64-8.7.0.84_cuda11-archive.tar.xz" 
+    sudo wget https://developer.download.nvidia.com/compute/redist/cudnn/v8.7.0/local_installers/11.8/cudnn-linux-x86_64-8.7.0.84_cuda11-archive.tar.xz  
+    sudo tar -xvf ${CUDNN_TAR_FILE} 
+    sudo tar -xvf ${CUDNN_TAR_FILE}  #解压
+    sudo mv cudnn-linux-x86_64-8.7.0.84_cuda11-archive cuda
+    sudo cp -P cuda/include/cudnn*.h /usr/local/cuda-11.8/include   
+    sudo cp -P cuda/lib/libcudnn* /usr/local/cuda-11.8/lib64/                                                                 
+    sudo chmod a+r /usr/local/cuda-11.8/lib64/libcudnn*
+
+
+
+\end{lstlisting}
+
+过程我主要参考这个网页\url{https://gist.github.com/MihailCosmin/affa6b1b71b43787e9228c25fe15aeba?permalink_comment_id=4850089}
+
+
+\end{itemize}
 \begin{itemize}
 \item \textbf{套装发行版：}俗称\LaTeX 的核心，常见的有CTeX套装、TeXlive套装（作者使用）、MacTeX套装等等，本文使用TeXlive2018版本，下载地址为\url{http://www.latexstudio.net/texsoftware}。
 
