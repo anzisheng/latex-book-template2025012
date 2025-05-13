@@ -111,20 +111,57 @@ OpenCV是出来图片的基础库，我们使用CUDA版本，有利于加速。
 \end{listing}
 
 其他的几个辅助库，它们有：
+
+fmt 库是 C++ 中格式化输出的现代解决方案，提供了类型安全、易用性和高性能。fmt 库比传统 sprintf 和 iostream 更快：
+安装方法：
+\begin{listing}{c}
+    git clone https://github.com/fmtlib/fmt.git
+    cd fmt
+    mkdir build
+    cd build
+    cmake ..
+    make -j8
+    sudo make install    
+\end{listing}
+
+然后再cmakelists补上fmt的include和lib
+\begin{listing}{c}
+    find_package(FMT REQUIRED)
+    target_link_libraries(xxx  fmt::fmt)
+\end{listing}
+
+
 spdlog
-
-json
-
-format
-
-
-
-
-
+spdlog 是一个快速的 C++ 日志库，具有高性能、易用性和丰富的功能特性。 spdlog 是 header-only 的，可以直接下载并包含头文件：#include "spdlog/spdlog.h"
+下载、编译源码:
+\begin{listing}
+    git clone https://github.com/gabime/spdlog.git
+    cd spdlog && mkdir build && cd build
+    cmake ..  && make -j16
+\end{listing}
 
 
 
-\end{itemize}
+一个实例。
+在安装了这些库之后，我们可以举例子演示一下使用方法。参数项目的github网址如下。
+参考项目网址 \url{https://github.com/cyrusbehr/tensorrt-cpp-api}
+主要演示的功能如下：
+\item \textbf{如何生成TensorRT engine 文件}
+\item \textbf{如何声明一个简单的优化简表}
+\item \textbf{推理精度}
+\item \textbf{如何读写GPU显存}
+\item \textbf{如何处理单个或者多个输入/输出}
+
+首先看一下简单流程：\begin{figure}[H]
+    \centering
+    \includegraphics{figures/progress.png}
+    \caption{Title of picture}
+    \end{figure}
+
+
+
+
+
 \begin{itemize}
 \item \textbf{套装发行版：}俗称\LaTeX 的核心，常见的有CTeX套装、TeXlive套装（作者使用）、MacTeX套装等等，本文使用TeXlive2018版本，下载地址为\url{http://www.latexstudio.net/texsoftware}。
 
@@ -148,36 +185,37 @@ format
 \item \textbf{texclear.bat}：用于清理辅助文件。
 \end{itemize}
 
-\section{文档结构}
-打开文件CDUT\_Lab\_report.tex文件后，内为文档内容结构
-\begin{minted}{LaTeX}
-% !TeX encoding = UTF8
-% !TeX program = xelatex
-\documentclass[CJK, GBK, UTF-8, oneside, a4paper, 12pt]{ctexart}
-%packages and format
-\input{setup/package.tex}
-\input{setup/format.tex}
-\begin{document}
-%cover and content
-\include{preface/cover}
-%body
-\include{body/section_1}
-\include{body/section_2}
-\include{body/section_3}
-\include{body/section_4}
-\include{body/section_5}
-%attachment
-\include{attachment/attachment}
-\end{document}
+\section{由onnx到engine}
+换脸的基础动作就是检测到人脸。对源图和目标图首先检测到人脸才能交换其特征，然后才能进行相关处理。
+第一个网络就是使用Yolo网络进行人脸检测。
+yoloface_8n.onnx 是一个轻量级人脸检测模型，属于 YOLO(You Only Look Once)系列模型的变种，专为高效人脸检测任务设计。
+用于快速检测图像或视频帧中的多个人脸，并输出人脸的边界框(Bounding Box)及置信度。实行单阶段检测：类似 YOLO,直接回归边界框和类别,无需区域提议(RPN)。
 
-\end{minted}
+可使用 Netron 工具可视化 .onnx 文件，直接查看输入/输出层名称和维度。
+下图是 Netron截图的输入输出部分：
+\begin{figure}[H]
+\centering
+\includegraphics{figures/inputs.png}
+\caption{Title of picture}
+\end{figure}
 
-\verb|\doucumentclass[...]\{...}|称为设置文档类型，本模板使用ctexart类型。
+\begin{figure}[H]
+\centering
+\includegraphics{figures/output.png}
+\caption{Title of picture}
+\end{figure}
 
-在\verb|\doucumentclass|与\verb|\begin{document}|中间称为\textbf{导言区}，全局设置与宏包添加均写在此处
+我们设计了一个类，用来处理onnx转成engine格式，并且处理图片，检测人脸。
+类图如下：\begin{figure}[H]
+    \centering
+    \includegraphics{figures/YoloV8_face.png}
+    \caption{Title of picture}
+    \end{figure}
 
-文档内容使用\verb|\include{file}|逐个添加，便于整体管理的同时也使主文档美观简介。cover为文档封面与目录，body内为文档各章节，attachment为学生实验心得。
+类说明：
+类名：YoloV8_face
+功能：对模型进行格式转换，从.onnx 转为.engine格式文件。
 
-文档内容从\verb|\begin{document}|开始，结束于\verb|\end{document}|。
+成员函数：+YoloV8_face(const string &onnxModelPath, const YoloV8Config &config)
+功能：构造函数，将onnx转为.engine文件。参数&onnxModelPath表示onnx文件， 参数config表示配置信息。
 
-由$\% !TeX$开头的两行为texstudio编辑器特有的魔法注释，意为使用UTF-8编码，编译引擎使用xelatex。

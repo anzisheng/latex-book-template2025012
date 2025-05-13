@@ -1,0 +1,11 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{l+s+sb}{\PYGZbs{}[}
+\PYG{n+nv}{\PYGZbs{}mathbf}\PYG{n+nb}{\PYGZob{}}\PYG{n+nb}{X}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{o}{=}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}left}\PYG{o}{(}
+\PYG{n+nv}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}\PYG{n+nb}{array}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{\PYGZob{}}\PYG{n+nb}{cccc}\PYG{n+nb}{\PYGZcb{}}
+\PYG{n+nb}{x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{l+m}{11}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{l+m}{12}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}ldots}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{l+m}{1}\PYG{n+nb}{n}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nv}{\PYGZbs{}\PYGZbs{}}
+\PYG{n+nb}{x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{l+m}{21}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{l+m}{22}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}ldots}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{l+m}{2}\PYG{n+nb}{n}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nv}{\PYGZbs{}\PYGZbs{}}
+\PYG{n+nv}{\PYGZbs{}vdots}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}vdots}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}ddots}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}vdots}\PYG{n+nv}{\PYGZbs{}\PYGZbs{}}
+\PYG{n+nb}{x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{n+nb}{n}\PYG{l+m}{1}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{n+nb}{n}\PYG{l+m}{2}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}ldots}\PYG{n+nb}{ }\PYG{n+nb}{\PYGZam{}}\PYG{n+nb}{ x}\PYG{n+nb}{\PYGZus{}}\PYG{n+nb}{\PYGZob{}}\PYG{n+nb}{nn}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nv}{\PYGZbs{}\PYGZbs{}}
+\PYG{n+nv}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}\PYG{n+nb}{array}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}right}\PYG{o}{)}
+\PYG{l+s}{\PYGZbs{}]}
+\end{MintedVerbatim}
